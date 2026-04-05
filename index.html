@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_blank">
+</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Projects — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0e0e0f;
+    --surface:  #161618;
+    --border:   #2a2a2e;
+    --amber:    #e8a030;
+    --amber-dim:#a06e1a;
+    --text:     #e2ddd6;
+    --muted:    #7a766e;
+    --white:    #f5f2ee;
+    --red:      #c0392b;
+    --teal:     #2e8b7a;
+    --blue:     #3a6ea8;
+    --purple:   #7b52ab;
+    --green:    #4a8c5c;
+
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body:    'Lora', Georgia, serif;
+    --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+    --ease: cubic-bezier(.4,0,.2,1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: .4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
+    background: rgba(14,14,15,.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--amber);
+    letter-spacing: .08em;
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .nav-logo:hover { opacity: .7; }
+
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .2s;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 100%;
+    height: 1px; background: var(--amber);
+    transition: right .25s var(--ease);
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--white); }
+  .nav-links a:hover::after, .nav-links a.active::after { right: 0; }
+
+  /* ── PAGE SYSTEM ── */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 64px;
+    animation: fadeUp .45s var(--ease) both;
+  }
+  .page.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 120px 48px 96px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(232,160,48,.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(58,110,168,.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .18em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-label::before {
+    content: '';
+    width: 32px; height: 1px; background: var(--amber);
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--white);
+    max-width: 760px;
+    margin-bottom: 28px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .hero-desc {
+    max-width: 520px;
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 48px;
+  }
+
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all .22s var(--ease);
+  }
+
+  .btn-primary {
+    background: var(--amber);
+    color: #0e0e0f;
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: #f0b040; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,160,48,.3); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    display: flex;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 48px;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 28px 32px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 80px 48px;
+  }
+
+  .section-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 48px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .section-link {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .section-link:hover { opacity: .7; }
+
+  /* ── CATEGORY FILTER ── */
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .filter-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 16px;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .filter-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .filter-btn.active { background: var(--amber); border-color: var(--amber); color: #0e0e0f; font-weight: 500; }
+
+  .filter-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .6;
+  }
+
+  /* ── PROJECT GRID ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .project-card {
+    background: var(--surface);
+    padding: 36px;
+    display: flex; flex-direction: column;
+    transition: background .2s;
+    cursor: pointer;
+  }
+  .project-card:hover { background: #1c1c1f; }
+  .project-card.hidden { display: none; }
+
+  .card-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .card-category {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: .65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .cat-project    { color: var(--blue);   border-color: var(--blue);   background: rgba(58,110,168,.08); }
+  .cat-research   { color: var(--teal);   border-color: var(--teal);   background: rgba(46,139,122,.08); }
+  .cat-experiment { color: var(--purple); border-color: var(--purple); background: rgba(123,82,171,.08); }
+  .cat-design     { color: var(--amber);  border-color: var(--amber);  background: rgba(232,160,48,.08); }
+  .cat-other      { color: var(--muted);  border-color: var(--border); background: transparent; }
+
+  .card-year {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    color: var(--muted);
+  }
+
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .card-desc {
+    font-size: .9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    flex: 1;
+    margin-bottom: 24px;
+  }
+
+  .card-tags {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: .6rem;
+    letter-spacing: .06em;
+    color: var(--muted);
+    padding: 3px 8px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+  }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-status {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+    font-size: .65rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .status-active { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+  .status-complete { background: var(--muted); }
+  .status-wip { background: var(--amber); box-shadow: 0 0 6px var(--amber-dim); }
+
+  .card-arrow {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--amber);
+    transition: transform .2s;
+  }
+  .project-card:hover .card-arrow { transform: translateX(4px); }
+
+  /* ── FEATURED CARD (full width) ── */
+  .project-card.featured {
+    grid-column: 1 / -1;
+    flex-direction: row; gap: 48px; align-items: center;
+  }
+  .featured-content { flex: 1; }
+  .featured-visual {
+    width: 280px; height: 180px; flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(232,160,48,.15), rgba(58,110,168,.15));
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: .65rem;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  /* ── ABOUT PAGE ── */
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 64px;
+    padding: 80px 48px;
+    max-width: 1100px;
+  }
+
+  .about-bio h2 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 32px;
+  }
+
+  .about-bio h2 em {
+    font-style: italic; color: var(--amber);
+  }
+
+  .about-bio p {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.85;
+    margin-bottom: 20px;
+    max-width: 560px;
+  }
+
+  .about-sidebar { }
+
+  .sidebar-block {
+    padding: 28px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-block h4 {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-list {
+    list-style: none;
+  }
+
+  .sidebar-list li {
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--muted);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+  }
+  .sidebar-list li:last-child { border-bottom: none; }
+  .sidebar-list li span { color: var(--text); }
+
+  .skill-bar-wrap {
+    margin-bottom: 12px;
+  }
+
+  .skill-bar-label {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .skill-bar {
+    height: 2px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .skill-bar-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    background: var(--amber);
+    transition: width 1s var(--ease);
+  }
+
+  /* ── CONTACT PAGE ── */
+  .contact-layout {
+    padding: 80px 48px;
+    max-width: 760px;
+  }
+
+  .contact-layout h2 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .contact-layout h2 em { color: var(--amber); font-style: italic; }
+
+  .contact-layout > p {
+    font-size: 1rem; color: var(--muted); margin-bottom: 48px; line-height: 1.8;
+  }
+
+  .form-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-group label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: .95rem;
+    outline: none;
+    transition: border-color .2s;
+    resize: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--amber); }
+
+  .form-group select option { background: var(--surface); }
+
+  .form-group textarea { height: 140px; }
+
+  .form-success {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--teal);
+    background: rgba(46,139,122,.08);
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--teal);
+    letter-spacing: .06em;
+    margin-top: 16px;
+  }
+
+  .contact-links {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-top: 48px; padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .contact-link:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  footer p {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    color: var(--muted);
+    letter-spacing: .06em;
+  }
+
+  .footer-dot {
+    color: var(--amber);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 48px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { gap: 20px; }
+    .hero, .section, .contact-layout { padding-left: 20px; padding-right: 20px; }
+    .stats-strip { margin: 0 20px; flex-wrap: wrap; }
+    .stat { min-width: 50%; }
+    .about-layout { grid-template-columns: 1fr; padding: 40px 20px; gap: 32px; }
+    .hero h1 { font-size: 2.4rem; }
+    .project-card.featured { flex-direction: column; }
+    .featured-visual { width: 100%; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 8px; text-align: center; }
+    .divider { margin: 0 20px; }
+  }
+
+  /* ── PROJECT DETAIL MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,.8);
+    backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn .25s var(--ease); }
+
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    max-width: 640px; width: 100%;
+    max-height: 80vh; overflow-y: auto;
+    padding: 48px;
+    animation: slideUp .3s var(--ease);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-close {
+    position: sticky; top: 0;
+    display: flex; justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+
+  .modal-close button {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer;
+    font-family: var(--font-mono); font-size: .7rem;
+    padding: 6px 12px; letter-spacing: .1em;
+    transition: all .2s;
+  }
+  .modal-close button:hover { border-color: var(--amber); color: var(--amber); }
+
+  .modal h2 {
+    font-family: var(--font-display);
+    font-size: 2rem; color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .modal-meta {
+    display: flex; gap: 12px; align-items: center;
+    flex-wrap: wrap; margin-bottom: 24px;
+  }
+
+  .modal p {
+    color: var(--muted); font-size: .95rem; line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .modal-section-title {
+    font-family: var(--font-mono);
+    font-size: .68rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--amber);
+    margin: 24px 0 12px;
+  }
+
+  .modal-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo" onclick="navigate('home')">// Ryan Nock</div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="navigate('home')" id="nav-home" class="active">Home</a></li>
+    <li><a href="#" onclick="navigate('projects')" id="nav-projects">Projects</a></li>
+    <li><a href="#" onclick="navigate('about')" id="nav-about">About</a></li>
+    <li><a href="#" onclick="navigate('contact')" id="nav-contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════
+     PAGE: HOME
+══════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-label">Portfolio &amp; Projects</div>
+    <h1>Hi, i'm Ryan <em>AI/ML Engineer</em></h1>
+    <p class="hero-desc">
+      A collection of projects, experiments, and research spanning software,
+      design, and whatever sparks curiosity. Always learning.
+    </p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" onclick="navigate('projects')">View All Projects →</button>
+      <button class="btn btn-ghost" onclick="navigate('about')">About Me</button>
+    </div>
+  </section>
+
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Total Projects</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Research Areas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Experiments Run</div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Featured Work</h2>
+      <span class="section-link" onclick="navigate('projects')">View all →</span>
+    </div>
+
+    <div class="projects-grid">
+      <!-- Featured Card -->
+      <div class="project-card featured" onclick="openModal(0)">
+        <div class="featured-content">
+          <div class="card-top">
+            <span class="card-category cat-project">● Project</span>
+            <span class="card-year">2025</span>
+          </div>
+          <div class="card-title">Neural Style Transfer Dashboard</div>
+          <div class="card-desc">
+            A real-time web app that applies artistic style transfer to images using a PyTorch backend.
+            Built to explore the boundary between ML tooling and accessible creative interfaces.
+          </div>
+          <div class="card-tags">
+            <span class="tag">Python</span><span class="tag">PyTorch</span>
+            <span class="tag">React</span><span class="tag">WebSockets</span>
+          </div>
+          <div class="card-footer">
+            <span class="card-status"><span class="status-dot status-active"></span>Active</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        <div class="featured-visual">[ Preview Image ]</div>
+      </div>
+
+      <div class="project-card" onclick="openModal(1)">
+        <div class="card-top">
+          <span class="card-category cat-research">● Research</span>
+          <span class="card-year">2025</span>
+        </div>
+        <div class="card-title">Attention Mechanisms in Sparse Networks</div>
+        <div class="card-desc">An investigation into how sparse attention patterns affect model performance on long-context tasks.</div>
+        <div class="card-tags">
+          <span class="tag">ML Research</span><span class="tag">Transformers</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-wip"></span>In Progress</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" onclick="openModal(2)">
+        <div class="card-top">
+          <span class="card-category cat-experiment">● Experiment</span>
+          <span class="card-year">2024</span>
+        </div>
+        <div class="card-title">Procedural Terrain Generator</div>
+        <div class="card-desc">Playing with noise functions and erosion simulation to generate realistic 3D landscapes in the browser.</div>
+        <div class="card-tags">
+          <span class="tag">Three.js</span><span class="tag">GLSL</span><span class="tag">WebGL</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+
+<!-- ══════════════════════════════
+     PAGE: PROJECTS
+══════════════════════════════ -->
+<div class="page" id="page-projects">
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">All Projects</h2>
+    </div>
+
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" data-filter="all" onclick="filterProjects('all', this)">
+        <span class="filter-dot"></span> All
+      </button>
+      <button class="filter-btn" data-filter="project" onclick="filterProjects('project', this)">
+        <span class="filter-dot" style="color:var(--blue)"></span> Project
+      </button>
+      <button class="filter-btn" data-filter="research" onclick="filterProjects('research', this)">
+        <span class="filter-dot" style="color:var(--teal)"></span> Research
+      </button>
+      <button class="filter-btn" data-filter="experiment" onclick="filterProjects('experiment', this)">
+        <span class="filter-dot" style="color:var(--purple)"></span> Experiment
+      </button>
+      <button class="filter-btn" data-filter="design" onclick="filterProjects('design', this)">
+        <span class="filter-dot" style="color:var(--amber)"></span> Design
+      </button>
+      <button class="filter-btn" data-filter="other" onclick="filterProjects('other', this)">
+        <span class="filter-dot" style="color:var(--muted)"></span> Other
+      </button>
+    </div>
+
+    <div class="projects-grid" id="projects-grid">
+
+      <div class="project-card" data-category="project" onclick="openModal(0)">
+        <div class="card-top">
+          <span class="card-category cat-project">● Project</span>
+          <span class="card-year">2025</span>
+        </div>
+        <div class="card-title">Neural Style Transfer Dashboard</div>
+        <div class="card-desc">A real-time web app applying artistic style transfer using a PyTorch backend with WebSocket streaming.</div>
+        <div class="card-tags">
+          <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">React</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-active"></span>Active</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="research" onclick="openModal(1)">
+        <div class="card-top">
+          <span class="card-category cat-research">● Research</span>
+          <span class="card-year">2025</span>
+        </div>
+        <div class="card-title">Attention in Sparse Networks</div>
+        <div class="card-desc">Investigating sparse attention patterns and their effect on long-context transformer performance.</div>
+        <div class="card-tags">
+          <span class="tag">ML</span><span class="tag">Transformers</span><span class="tag">Python</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-wip"></span>In Progress</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="experiment" onclick="openModal(2)">
+        <div class="card-top">
+          <span class="card-category cat-experiment">● Experiment</span>
+          <span class="card-year">2024</span>
+        </div>
+        <div class="card-title">Procedural Terrain Generator</div>
+        <div class="card-desc">Noise functions and erosion simulation to produce realistic 3D landscapes rendered entirely in WebGL.</div>
+        <div class="card-tags">
+          <span class="tag">Three.js</span><span class="tag">GLSL</span><span class="tag">WebGL</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="design" onclick="openModal(3)">
+        <div class="card-top">
+          <span class="card-category cat-design">● Design</span>
+          <span class="card-year">2024</span>
+        </div>
+        <div class="card-title">Type Specimen Generator</div>
+        <div class="card-desc">An interactive tool for generating type specimens and pairing guides, exportable as PDF.</div>
+        <div class="card-tags">
+          <span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Google Fonts</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="experiment" onclick="openModal(4)">
+        <div class="card-top">
+          <span class="card-category cat-experiment">● Experiment</span>
+          <span class="card-year">2024</span>
+        </div>
+        <div class="card-title">Audio Visualizer — FFT Rings</div>
+        <div class="card-desc">Real-time audio frequency visualization using the Web Audio API with procedurally animated SVG ring structures.</div>
+        <div class="card-tags">
+          <span class="tag">Web Audio</span><span class="tag">Canvas</span><span class="tag">SVG</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="project" onclick="openModal(5)">
+        <div class="card-top">
+          <span class="card-category cat-project">● Project</span>
+          <span class="card-year">2024</span>
+        </div>
+        <div class="card-title">CLI Task Tracker</div>
+        <div class="card-desc">A minimal command-line task and project tracker with tagging, priorities, and markdown notes support.</div>
+        <div class="card-tags">
+          <span class="tag">Rust</span><span class="tag">CLI</span><span class="tag">SQLite</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-active"></span>Active</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="research" onclick="openModal(6)">
+        <div class="card-top">
+          <span class="card-category cat-research">● Research</span>
+          <span class="card-year">2023</span>
+        </div>
+        <div class="card-title">Bias Detection in News Headlines</div>
+        <div class="card-desc">A corpus study comparing framing and sentiment across political news sources using NLP techniques.</div>
+        <div class="card-tags">
+          <span class="tag">NLP</span><span class="tag">spaCy</span><span class="tag">Python</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-category="other" onclick="openModal(7)">
+        <div class="card-top">
+          <span class="card-category cat-other">● Other</span>
+          <span class="card-year">2023</span>
+        </div>
+        <div class="card-title">Personal Knowledge Graph</div>
+        <div class="card-desc">A local-first graph database for personal notes, linked concepts, and idea mapping with a visual explorer UI.</div>
+        <div class="card-tags">
+          <span class="tag">Obsidian</span><span class="tag">Dataview</span><span class="tag">Graph API</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-status"><span class="status-dot status-active"></span>Active</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+
+<!-- ══════════════════════════════
+     PAGE: ABOUT
+══════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="about-layout">
+    <div class="about-bio">
+      <h2>I build to learn and <em>grow.</em></h2>
+      <p>
+        I'm a developer, researcher, and occasional designer with a deep interest
+        in machine learning, systems programming, and building interfaces that feel
+        genuinely delightful to use.
+      </p>
+      <p>
+        Most of my work lives at the intersection of technical depth and usability —
+        whether that's training models, writing low-level Python, or obsessing over
+        algorithms at 2 a.m.
+      </p>
+      <p>
+        When I'm not at a keyboard I'm probably reading about artificial intelligence,
+        walking, or looking for good coffee.
+      </p>
+      <div style="margin-top:36px">
+        <button class="btn btn-primary" onclick="navigate('contact')">Get in Touch →</button>
+      </div>
+    </div>
+
+    <div class="about-sidebar">
+      <div class="sidebar-block">
+        <h4>// Skills</h4>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>Python / ML</span><span>90%</span></div>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>JavaScript / TS</span><span>85%</span></div>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>Java</span><span>65%</span></div>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:65%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>UI / Design</span><span>75%</span></div>
+          <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+
+      <div class="sidebar-block">
+        <h4>// Quick Facts</h4>
+        <ul class="sidebar-list">
+          <li>Location <span>Oklahoma, US</span></li>
+          <li>Focus <span>ML + Systems</span></li>
+          <li>Available <span>Open to collab</span></li>
+          <li>Coffee <span>Black, always</span></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-block">
+        <h4>// Currently Reading</h4>
+        <ul class="sidebar-list">
+          <li><span>SICP — Abelson &amp; Sussman</span></li>
+          <li><span>The Alignment Problem</span></li>
+          <li><span>Elements of Statistical Learning</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-layout">
+    <h2>Let's <em>talk.</em></h2>
+    <p>Have a project idea, want to collaborate, or just want to say hello?
+       Fill out the form and I'll get back to you as soon as I can.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" placeholder="Jane Smith">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="jane@example.com">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Subject</label>
+      <select>
+        <option value="">Select a topic…</option>
+        <option>Collaboration</option>
+        <option>Question about a project</option>
+        <option>Research inquiry</option>
+        <option>Just saying hi</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Message</label>
+      <textarea placeholder="Tell me what's on your mind…"></textarea>
+    </div>
+
+    <button class="btn btn-primary" onclick="submitForm()">Send Message →</button>
+
+    <div class="form-success" id="form-success">
+      ✓ &nbsp; Message received — I'll be in touch soon.
+    </div>
+
+    <div class="contact-links">
+      <a class="contact-link" href="https://github.com/ryan-nock">⌥ GitHub</a>
+      <a class="contact-link" href="https://www.linkedin.com/in/ryan-nock/">⌥ LinkedIn</a>
+      <a class="contact-link" href="#">⌥ Twitter / X</a>
+      <a class="contact-link" href="#">⌥ Email</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>© 2025 <span class="footer-dot">●</span> Ryan Nock</p>
+  <p>// Last updated April 2025</p>
+</footer>
+
+
+<!-- ══════════════════════════════
+     PROJECT DETAIL MODAL
+══════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-close">
+      <button onclick="closeModalDirect()">✕ Close</button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+
+<script>
+// ── PROJECT DATA ──
+const projects = [
+  {
+    title: "Neural Style Transfer Dashboard",
+    category: "Project",
+    catClass: "cat-project",
+    year: "2025",
+    status: "Active",
+    statusClass: "status-active",
+    description: "A real-time web application that lets users apply neural artistic style transfer to their own images. The frontend is a React SPA that communicates with a FastAPI backend via WebSockets for live progress streaming.",
+    detail: "This project started as a way to make ML tooling actually accessible. The key challenge was optimizing inference speed while maintaining quality — I ended up using a pre-trained VGG-19 backbone with a custom loss weighting scheme that shaved ~40% off processing time.",
+    tags: ["Python", "PyTorch", "React", "FastAPI", "WebSockets"],
+    links: ["GitHub →", "Live Demo →"]
+  },
+  {
+    title: "Attention in Sparse Networks",
+    category: "Research",
+    catClass: "cat-research",
+    year: "2025",
+    status: "In Progress",
+    statusClass: "status-wip",
+    description: "An empirical study investigating how different sparse attention patterns — local, strided, and random — affect transformer performance on long-context language tasks.",
+    detail: "Early findings suggest that strided attention degrades gracefully on summarization tasks, while random sparsity hurts cross-sentence reasoning more than expected. Full write-up in progress.",
+    tags: ["ML Research", "Transformers", "Python", "HuggingFace"],
+    links: ["Paper Draft →", "Code →"]
+  },
+  {
+    title: "Procedural Terrain Generator",
+    category: "Experiment",
+    catClass: "cat-experiment",
+    year: "2024",
+    status: "Complete",
+    statusClass: "status-complete",
+    description: "A browser-based terrain generator using layered Perlin noise, hydraulic erosion simulation, and real-time 3D rendering via Three.js and GLSL shaders.",
+    detail: "The erosion simulation runs 5,000 particle droplet iterations per second using a custom GPGPU pipeline. Surprisingly faithful to real landscape formations.",
+    tags: ["Three.js", "GLSL", "WebGL", "JavaScript"],
+    links: ["Live Demo →", "GitHub →"]
+  },
+  {
+    title: "Type Specimen Generator",
+    category: "Design",
+    catClass: "cat-design",
+    year: "2024",
+    status: "Complete",
+    statusClass: "status-complete",
+    description: "An interactive tool for creating type specimens and font pairing guides. Pulls from Google Fonts API, renders live previews, and exports to PDF.",
+    detail: "Built as a design utility for my own workflow. Ended up sharing it and people found it useful for rapid font exploration without design tool overhead.",
+    tags: ["CSS", "JavaScript", "Google Fonts API"],
+    links: ["Live Tool →", "GitHub →"]
+  },
+  {
+    title: "Audio Visualizer — FFT Rings",
+    category: "Experiment",
+    catClass: "cat-experiment",
+    year: "2024",
+    status: "Complete",
+    statusClass: "status-complete",
+    description: "Real-time audio frequency visualization using the Web Audio API. Animated concentric SVG rings respond to FFT frequency bins with physics-like motion.",
+    detail: "Started as a weekend experiment and turned into a 3-week rabbit hole of signal processing and animation timing. The 'breathe' mode is my favorite output.",
+    tags: ["Web Audio API", "Canvas", "SVG", "JavaScript"],
+    links: ["Live Demo →", "GitHub →"]
+  },
+  {
+    title: "CLI Task Tracker",
+    category: "Project",
+    catClass: "cat-project",
+    year: "2024",
+    status: "Active",
+    statusClass: "status-active",
+    description: "A minimal, fast command-line task and project tracker written in Rust. Features tagging, priority queues, markdown note support, and SQLite persistence.",
+    detail: "I got frustrated with every existing task app. This one does exactly what I want and nothing more. Binary size is under 2MB. Startup time is imperceptible.",
+    tags: ["Rust", "SQLite", "CLI", "Terminal UI"],
+    links: ["GitHub →", "Crates.io →"]
+  },
+  {
+    title: "Bias Detection in News Headlines",
+    category: "Research",
+    catClass: "cat-research",
+    year: "2023",
+    status: "Complete",
+    statusClass: "status-complete",
+    description: "A corpus study comparing framing, sentiment, and lexical choices across political news sources. Built a custom annotation pipeline and classifier using spaCy and HuggingFace.",
+    detail: "Analyzed ~80,000 headlines across 12 sources over 6 months. Key finding: framing divergence increases significantly during election cycles, more so than base sentiment shifts.",
+    tags: ["NLP", "spaCy", "Python", "HuggingFace", "Corpus Analysis"],
+    links: ["Paper →", "Dataset →", "Code →"]
+  },
+  {
+    title: "Personal Knowledge Graph",
+    category: "Other",
+    catClass: "cat-other",
+    year: "2023",
+    status: "Active",
+    statusClass: "status-active",
+    description: "A local-first personal knowledge management system built on Obsidian with custom Dataview queries, a graph explorer UI, and automated backlinking.",
+    detail: "Not strictly a project anyone else can use out of the box, but the methodology and vault structure are documented. Currently has 800+ notes with rich interlinking.",
+    tags: ["Obsidian", "Dataview", "JavaScript", "Graph"],
+    links: ["Template →", "Write-up →"]
+  }
+];
+
+// ── NAVIGATION ──
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+
+// ── FILTER ──
+function filterProjects(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('#projects-grid .project-card').forEach(card => {
+    if (cat === 'all' || card.dataset.category === cat) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+// ── MODAL ──
+function openModal(idx) {
+  const p = projects[idx];
+  if (!p) return;
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-meta">
+      <span class="card-category ${p.catClass}">● ${p.category}</span>
+      <span class="card-year">${p.year}</span>
+      <span class="card-status" style="margin-left:8px">
+        <span class="status-dot ${p.statusClass}"></span>
+        ${p.status}
+      </span>
+    </div>
+    <h2>${p.title}</h2>
+    <p>${p.description}</p>
+    <div class="modal-section-title">// Details</div>
+    <p>${p.detail}</p>
+    <div class="modal-section-title">// Stack</div>
+    <div class="card-tags" style="margin-bottom:0">
+      ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+    </div>
+    <div class="modal-links">
+      ${p.links.map(l => `<button class="btn btn-ghost" style="font-size:.7rem">${l}</button>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── FORM ──
+function submitForm() {
+  const success = document.getElementById('form-success');
+  success.style.display = 'block';
+  setTimeout(() => { success.style.display = 'none'; }, 5000);
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModalDirect();
+});
+
+// prevent default for nav links
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', e => e.preventDefault());
+});
+</script>
+</body>
+</html>
