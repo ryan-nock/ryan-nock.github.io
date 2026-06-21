@@ -1,1314 +1,938 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <base target="_blank">
-</head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Projects — Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:       #0e0e0f;
-    --surface:  #161618;
-    --border:   #2a2a2e;
-    --amber:    #e8a030;
-    --amber-dim:#a06e1a;
-    --text:     #e2ddd6;
-    --muted:    #7a766e;
-    --white:    #f5f2ee;
-    --red:      #c0392b;
-    --teal:     #2e8b7a;
-    --blue:     #3a6ea8;
-    --purple:   #7b52ab;
-    --green:    #4a8c5c;
-
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body:    'Lora', Georgia, serif;
-    --font-mono:    'JetBrains Mono', 'Courier New', monospace;
-    --ease: cubic-bezier(.4,0,.2,1);
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.7;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── GRAIN OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 9999; opacity: .4;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 48px;
-    height: 64px;
-    background: rgba(14,14,15,.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav-logo {
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    color: var(--amber);
-    letter-spacing: .08em;
-    cursor: pointer;
-    transition: opacity .2s;
-  }
-  .nav-logo:hover { opacity: .7; }
-
-  .nav-links {
-    display: flex; gap: 36px; list-style: none;
-  }
-
-  .nav-links a {
-    font-family: var(--font-mono);
-    font-size: .75rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color .2s;
-    position: relative;
-    padding-bottom: 2px;
-  }
-  .nav-links a::after {
-    content: '';
-    position: absolute; bottom: 0; left: 0; right: 100%;
-    height: 1px; background: var(--amber);
-    transition: right .25s var(--ease);
-  }
-  .nav-links a:hover, .nav-links a.active { color: var(--white); }
-  .nav-links a:hover::after, .nav-links a.active::after { right: 0; }
-
-  /* ── PAGE SYSTEM ── */
-  .page {
-    display: none;
-    min-height: 100vh;
-    padding-top: 64px;
-    animation: fadeUp .45s var(--ease) both;
-  }
-  .page.active { display: block; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    padding: 120px 48px 96px;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(232,160,48,.08) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(58,110,168,.07) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .hero-label {
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    letter-spacing: .18em;
-    color: var(--amber);
-    text-transform: uppercase;
-    margin-bottom: 24px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .hero-label::before {
-    content: '';
-    width: 32px; height: 1px; background: var(--amber);
-  }
-
-  .hero h1 {
-    font-family: var(--font-display);
-    font-size: clamp(3rem, 7vw, 6rem);
-    font-weight: 700;
-    line-height: 1.05;
-    color: var(--white);
-    max-width: 760px;
-    margin-bottom: 28px;
-  }
-
-  .hero h1 em {
-    font-style: italic;
-    color: var(--amber);
-  }
-
-  .hero-desc {
-    max-width: 520px;
-    font-size: 1.05rem;
-    color: var(--muted);
-    line-height: 1.8;
-    margin-bottom: 48px;
-  }
-
-  .hero-ctas {
-    display: flex; gap: 16px; flex-wrap: wrap;
-  }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px;
-    font-family: var(--font-mono);
-    font-size: .78rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: all .22s var(--ease);
-  }
-
-  .btn-primary {
-    background: var(--amber);
-    color: #0e0e0f;
-    font-weight: 500;
-  }
-  .btn-primary:hover { background: #f0b040; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,160,48,.3); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-  .btn-ghost:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
-
-  /* ── STATS STRIP ── */
-  .stats-strip {
-    display: flex;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin: 0 48px;
-  }
-
-  .stat {
-    flex: 1;
-    padding: 28px 32px;
-    border-right: 1px solid var(--border);
-  }
-  .stat:last-child { border-right: none; }
-
-  .stat-num {
-    font-family: var(--font-display);
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-
-  .stat-label {
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ── SECTION ── */
-  .section {
-    padding: 80px 48px;
-  }
-
-  .section-header {
-    display: flex; align-items: baseline; justify-content: space-between;
-    margin-bottom: 48px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--white);
-  }
-
-  .section-link {
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--amber);
-    text-decoration: none;
-    cursor: pointer;
-    transition: opacity .2s;
-  }
-  .section-link:hover { opacity: .7; }
-
-  /* ── CATEGORY FILTER ── */
-  .filter-bar {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    margin-bottom: 40px;
-  }
-
-  .filter-btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 7px 16px;
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .filter-btn:hover { border-color: var(--amber); color: var(--amber); }
-  .filter-btn.active { background: var(--amber); border-color: var(--amber); color: #0e0e0f; font-weight: 500; }
-
-  .filter-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: .6;
-  }
-
-  /* ── PROJECT GRID ── */
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-
-  .project-card {
-    background: var(--surface);
-    padding: 36px;
-    display: flex; flex-direction: column;
-    transition: background .2s;
-    cursor: pointer;
-  }
-  .project-card:hover { background: #1c1c1f; }
-  .project-card.hidden { display: none; }
-
-  .card-top {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
-  .card-category {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 10px;
-    font-family: var(--font-mono);
-    font-size: .65rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    border: 1px solid;
-  }
-
-  .cat-project    { color: var(--blue);   border-color: var(--blue);   background: rgba(58,110,168,.08); }
-  .cat-research   { color: var(--teal);   border-color: var(--teal);   background: rgba(46,139,122,.08); }
-  .cat-experiment { color: var(--purple); border-color: var(--purple); background: rgba(123,82,171,.08); }
-  .cat-design     { color: var(--amber);  border-color: var(--amber);  background: rgba(232,160,48,.08); }
-  .cat-other      { color: var(--muted);  border-color: var(--border); background: transparent; }
-
-  .card-year {
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    color: var(--muted);
-  }
-
-  .card-title {
-    font-family: var(--font-display);
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1.2;
-    margin-bottom: 12px;
-  }
-
-  .card-desc {
-    font-size: .9rem;
-    color: var(--muted);
-    line-height: 1.7;
-    flex: 1;
-    margin-bottom: 24px;
-  }
-
-  .card-tags {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  .tag {
-    font-family: var(--font-mono);
-    font-size: .6rem;
-    letter-spacing: .06em;
-    color: var(--muted);
-    padding: 3px 8px;
-    background: rgba(255,255,255,.04);
-    border: 1px solid var(--border);
-  }
-
-  .card-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .card-status {
-    display: flex; align-items: center; gap: 6px;
-    font-family: var(--font-mono);
-    font-size: .65rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-  }
-  .status-active { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
-  .status-complete { background: var(--muted); }
-  .status-wip { background: var(--amber); box-shadow: 0 0 6px var(--amber-dim); }
-
-  .card-arrow {
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    color: var(--amber);
-    transition: transform .2s;
-  }
-  .project-card:hover .card-arrow { transform: translateX(4px); }
-
-  /* ── FEATURED CARD (full width) ── */
-  .project-card.featured {
-    grid-column: 1 / -1;
-    flex-direction: row; gap: 48px; align-items: center;
-  }
-  .featured-content { flex: 1; }
-  .featured-visual {
-    width: 280px; height: 180px; flex-shrink: 0;
-    background: linear-gradient(135deg, rgba(232,160,48,.15), rgba(58,110,168,.15));
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono);
-    font-size: .65rem;
-    color: var(--muted);
-    letter-spacing: .1em;
-    text-transform: uppercase;
-  }
-
-  /* ── ABOUT PAGE ── */
-  .about-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 64px;
-    padding: 80px 48px;
-    max-width: 1100px;
-  }
-
-  .about-bio h2 {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1.1;
-    margin-bottom: 32px;
-  }
-
-  .about-bio h2 em {
-    font-style: italic; color: var(--amber);
-  }
-
-  .about-bio p {
-    font-size: 1rem;
-    color: var(--muted);
-    line-height: 1.85;
-    margin-bottom: 20px;
-    max-width: 560px;
-  }
-
-  .about-sidebar { }
-
-  .sidebar-block {
-    padding: 28px;
-    border: 1px solid var(--border);
-    margin-bottom: 16px;
-  }
-
-  .sidebar-block h4 {
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--amber);
-    margin-bottom: 16px;
-  }
-
-  .sidebar-list {
-    list-style: none;
-  }
-
-  .sidebar-list li {
-    font-family: var(--font-mono);
-    font-size: .78rem;
-    color: var(--muted);
-    padding: 6px 0;
-    border-bottom: 1px solid var(--border);
-    display: flex; justify-content: space-between;
-  }
-  .sidebar-list li:last-child { border-bottom: none; }
-  .sidebar-list li span { color: var(--text); }
-
-  .skill-bar-wrap {
-    margin-bottom: 12px;
-  }
-
-  .skill-bar-label {
-    display: flex; justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: .7rem;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .skill-bar {
-    height: 2px;
-    background: var(--border);
-    position: relative;
-  }
-
-  .skill-bar-fill {
-    position: absolute; top: 0; left: 0; height: 100%;
-    background: var(--amber);
-    transition: width 1s var(--ease);
-  }
-
-  /* ── CONTACT PAGE ── */
-  .contact-layout {
-    padding: 80px 48px;
-    max-width: 760px;
-  }
-
-  .contact-layout h2 {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 16px;
-  }
-
-  .contact-layout h2 em { color: var(--amber); font-style: italic; }
-
-  .contact-layout > p {
-    font-size: 1rem; color: var(--muted); margin-bottom: 48px; line-height: 1.8;
-  }
-
-  .form-row {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    margin-bottom: 16px;
-  }
-
-  .form-group { margin-bottom: 16px; }
-
-  .form-group label {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 12px 16px;
-    font-family: var(--font-body);
-    font-size: .95rem;
-    outline: none;
-    transition: border-color .2s;
-    resize: none;
-  }
-
-  .form-group input:focus,
-  .form-group textarea:focus,
-  .form-group select:focus { border-color: var(--amber); }
-
-  .form-group select option { background: var(--surface); }
-
-  .form-group textarea { height: 140px; }
-
-  .form-success {
-    display: none;
-    padding: 20px;
-    border: 1px solid var(--teal);
-    background: rgba(46,139,122,.08);
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    color: var(--teal);
-    letter-spacing: .06em;
-    margin-top: 16px;
-  }
-
-  .contact-links {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    margin-top: 48px; padding-top: 40px;
-    border-top: 1px solid var(--border);
-  }
-
-  .contact-link {
-    display: flex; align-items: center; gap: 10px;
-    padding: 14px 20px;
-    border: 1px solid var(--border);
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    transition: all .2s;
-  }
-  .contact-link:hover { border-color: var(--amber); color: var(--amber); }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 48px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  footer p {
-    font-family: var(--font-mono);
-    font-size: .68rem;
-    color: var(--muted);
-    letter-spacing: .06em;
-  }
-
-  .footer-dot {
-    color: var(--amber);
-  }
-
-  /* ── DIVIDER ── */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 0 48px;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
-    nav { padding: 0 20px; }
-    .nav-links { gap: 20px; }
-    .hero, .section, .contact-layout { padding-left: 20px; padding-right: 20px; }
-    .stats-strip { margin: 0 20px; flex-wrap: wrap; }
-    .stat { min-width: 50%; }
-    .about-layout { grid-template-columns: 1fr; padding: 40px 20px; gap: 32px; }
-    .hero h1 { font-size: 2.4rem; }
-    .project-card.featured { flex-direction: column; }
-    .featured-visual { width: 100%; }
-    .form-row { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 8px; text-align: center; }
-    .divider { margin: 0 20px; }
-  }
-
-  /* ── PROJECT DETAIL MODAL ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; z-index: 500;
-    background: rgba(0,0,0,.8);
-    backdrop-filter: blur(6px);
-    align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.open { display: flex; animation: fadeIn .25s var(--ease); }
-
-  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    max-width: 640px; width: 100%;
-    max-height: 80vh; overflow-y: auto;
-    padding: 48px;
-    animation: slideUp .3s var(--ease);
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-  }
-
-  .modal-close {
-    position: sticky; top: 0;
-    display: flex; justify-content: flex-end;
-    margin-bottom: 12px;
-  }
-
-  .modal-close button {
-    background: none; border: 1px solid var(--border);
-    color: var(--muted); cursor: pointer;
-    font-family: var(--font-mono); font-size: .7rem;
-    padding: 6px 12px; letter-spacing: .1em;
-    transition: all .2s;
-  }
-  .modal-close button:hover { border-color: var(--amber); color: var(--amber); }
-
-  .modal h2 {
-    font-family: var(--font-display);
-    font-size: 2rem; color: var(--white);
-    margin-bottom: 12px;
-  }
-
-  .modal-meta {
-    display: flex; gap: 12px; align-items: center;
-    flex-wrap: wrap; margin-bottom: 24px;
-  }
-
-  .modal p {
-    color: var(--muted); font-size: .95rem; line-height: 1.8;
-    margin-bottom: 16px;
-  }
-
-  .modal-section-title {
-    font-family: var(--font-mono);
-    font-size: .68rem; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--amber);
-    margin: 24px 0 12px;
-  }
-
-  .modal-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ryan Nock — AI/ML Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #090909;
+      --surface:    #0f0f0f;
+      --surface-2:  #141414;
+      --border:     #1e1e1e;
+      --text:       #dfdfdf;
+      --text-muted: #585858;
+      --text-dim:   #2c2c2c;
+      --accent:     #c9b899;   /* warm cream — italic serif highlight */
+      --green:      #4f9467;
+      --blue:       #4f7aad;
+      --max-w:      1080px;
+      --pad:        32px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── UTILITY ──────────────────────────────────────────── */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad); }
+
+    em {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .muted { color: var(--text-muted); }
+
+    /* fade-in on scroll */
+    .fi {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fi.visible { opacity: 1; transform: translateY(0); }
+    .fi-d1 { transition-delay: 0.08s; }
+    .fi-d2 { transition-delay: 0.16s; }
+    .fi-d3 { transition-delay: 0.24s; }
+
+    /* ─── NAV ──────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(9,9,9,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--pad);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+    .nav-logo b { color: var(--text); font-weight: 500; }
+
+    nav ul {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    nav a {
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.18s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ─── HERO ─────────────────────────────────────────────── */
+    .hero {
+      padding: 164px 0 108px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(58px, 9vw, 104px);
+      font-weight: 300;
+      letter-spacing: -0.035em;
+      line-height: 0.95;
+      margin-bottom: 36px;
+    }
+
+    .hero h1 em {
+      font-size: 1.04em;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-desc {
+      max-width: 500px;
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.72;
+      margin-bottom: 52px;
+    }
+
+    .hero-actions { display: flex; gap: 24px; align-items: center; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text);
+      color: var(--bg);
+      padding: 13px 26px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: opacity 0.18s;
+    }
+    .btn-primary:hover { opacity: 0.82; }
+
+    .btn-ghost {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-ghost::after { content: ' →'; }
+
+    /* ─── MARQUEE ───────────────────────────────────────────── */
+    .marquee-wrap {
+      border-bottom: 1px solid var(--border);
+      padding: 15px 0;
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 40s linear infinite;
+    }
+
+    .marquee-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 0 32px;
+      flex-shrink: 0;
+    }
+    .marquee-item::before {
+      content: '●';
+      margin-right: 32px;
+      color: var(--text-dim);
+    }
+
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── STATS ─────────────────────────────────────────────── */
+    .stats { border-bottom: 1px solid var(--border); padding: 64px 0; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-item {
+      padding-right: 32px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item + .stat-item { padding-left: 32px; }
+    .stat-item:last-child { border-right: none; padding-right: 0; }
+
+    .stat-num {
+      font-size: 52px;
+      font-weight: 300;
+      letter-spacing: -0.045em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ─── GENERIC SECTION ───────────────────────────────────── */
+    .section { padding: 100px 0; border-bottom: 1px solid var(--border); }
+
+    h2 {
+      font-size: clamp(34px, 4vw, 54px);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 56px;
+    }
+
+    /* ─── ABOUT ─────────────────────────────────────────────── */
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.78;
+      margin-bottom: 22px;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text); font-weight: 500; }
+
+    .aside-block { margin-bottom: 40px; }
+    .aside-block:last-child { margin-bottom: 0; }
+
+    .aside-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    /* skill bars */
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 11px;
+    }
+    .skill-name {
+      font-size: 13px;
+      color: var(--text);
+      min-width: 118px;
+    }
+    .skill-track {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+    }
+    .skill-fill { height: 100%; background: var(--text-muted); }
+    .skill-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    /* facts */
+    .fact-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .fact-row:last-child { border-bottom: none; }
+    .fact-k { color: var(--text-muted); }
+    .fact-v { color: var(--text); }
+
+    /* reading */
+    .read-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .read-item:last-child { border-bottom: none; }
+
+    /* ─── FEATURED PROJECTS ─────────────────────────────────── */
+    .project-card {
+      display: grid;
+      grid-template-columns: 180px 1fr 110px;
+      gap: 40px;
+      align-items: start;
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      cursor: default;
+      transition: opacity 0.18s;
+    }
+    .project-card:last-child { border-bottom: 1px solid var(--border); }
+    .project-card:hover { opacity: 0.72; }
+
+    .card-meta { display: flex; flex-direction: column; gap: 5px; }
+
+    .p-cat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .p-yr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .p-title {
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: -0.012em;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .p-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.68;
+      margin-bottom: 18px;
+    }
+
+    .p-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+    }
+
+    /* status badge */
+    .p-status {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .dot-active   { background: var(--green); }
+    .dot-progress { background: var(--blue); }
+    .dot-complete { background: var(--text-muted); }
+
+    /* ─── ALL PROJECTS ──────────────────────────────────────── */
+    .all-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .all-head h2 { margin-bottom: 0; }
+
+    .filter-row { display: flex; gap: 4px; }
+
+    .f-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid transparent;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .f-btn:hover, .f-btn.on { color: var(--text); border-color: var(--border); }
+
+    /* tile grid using gap-as-border trick */
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .p-tile {
+      background: var(--bg);
+      padding: 32px;
+      transition: background 0.18s;
+      cursor: default;
+    }
+    .p-tile:hover { background: var(--surface); }
+
+    .tile-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .tile-title {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .tile-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .tile-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .tile-foot .p-tags { flex: 1; }
+    .tile-stat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ─── CONTACT ───────────────────────────────────────────── */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .contact-blurb {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+
+    .c-link {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      text-decoration: none;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+      transition: color 0.18s;
+    }
+    .c-link:first-of-type { border-top: 1px solid var(--border); }
+    .c-link:hover { color: var(--text); }
+
+    /* form */
+    .c-form { display: flex; flex-direction: column; gap: 20px; }
+
+    .fg { display: flex; flex-direction: column; gap: 6px; }
+
+    .fg label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .fg input, .fg select, .fg textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.18s;
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--text-muted);
+    }
+    .fg textarea { resize: vertical; min-height: 110px; }
+    .fg select option { background: var(--surface); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .c-submit {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      padding: 13px 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.18s;
+    }
+    .c-submit:hover { opacity: 0.82; }
+
+    .c-success {
+      display: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--green);
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    footer { padding: 40px 0; }
+
+    .foot-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .foot-l, .foot-r {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .about-layout { grid-template-columns: 1fr; gap: 52px; }
+    }
+
+    @media (max-width: 768px) {
+      :root { --pad: 20px; }
+      nav ul { gap: 16px; }
+      .hero { padding: 128px 0 80px; }
+      .hero h1 { font-size: 48px; }
+      .hero-desc { font-size: 15px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+      .stat-item { border-right: none !important; padding: 0 !important; }
+      .project-card { grid-template-columns: 1fr; gap: 16px; }
+      .p-status { display: none; }
+      .tile-grid { grid-template-columns: 1fr; }
+      .contact-layout { grid-template-columns: 1fr; gap: 52px; }
+      .form-row { grid-template-columns: 1fr; }
+      .all-head { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fi { opacity: 1; transform: none; }
+      .marquee-track { animation: none; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- ── NAV ──────────────────────────────────────────────────── -->
 <nav>
-  <div class="nav-logo" onclick="navigate('home')">// Ryan Nock</div>
-  <ul class="nav-links">
-    <li><a href="#" onclick="navigate('home')" id="nav-home" class="active">Home</a></li>
-    <li><a href="#" onclick="navigate('projects')" id="nav-projects">Projects</a></li>
-    <li><a href="#" onclick="navigate('about')" id="nav-about">About</a></li>
-    <li><a href="#" onclick="navigate('contact')" id="nav-contact">Contact</a></li>
-  </ul>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">// <b>RYAN NOCK</b></a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
 </nav>
 
-<!-- ══════════════════════════════
-     PAGE: HOME
-══════════════════════════════ -->
-<div class="page active" id="page-home">
-
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-label">Portfolio &amp; Projects</div>
-    <h1>Hi, i'm Ryan <em>AI/ML Engineer</em></h1>
-    <p class="hero-desc">
-      A collection of projects, experiments, and research spanning software,
-      design, and whatever sparks curiosity. Always learning.
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero" id="home">
+  <div class="container">
+    <p class="eyebrow fi">AI / ML Engineer</p>
+    <h1 class="fi fi-d1">Ryan <em>Nock</em></h1>
+    <p class="hero-desc fi fi-d2">
+      Building at the intersection of machine learning, systems programming,
+      and interfaces worth using. Based in Oklahoma — always learning.
     </p>
-    <div class="hero-ctas">
-      <button class="btn btn-primary" onclick="navigate('projects')">View All Projects →</button>
-      <button class="btn btn-ghost" onclick="navigate('about')">About Me</button>
-    </div>
-  </section>
-
-  <div class="stats-strip">
-    <div class="stat">
-      <div class="stat-num">12</div>
-      <div class="stat-label">Total Projects</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">4</div>
-      <div class="stat-label">In Progress</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">3</div>
-      <div class="stat-label">Research Areas</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">∞</div>
-      <div class="stat-label">Experiments Run</div>
+    <div class="hero-actions fi fi-d3">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#about" class="btn-ghost">About me</a>
     </div>
   </div>
+</section>
 
-  <section class="section">
-    <div class="section-header">
-      <h2 class="section-title">Featured Work</h2>
-      <span class="section-link" onclick="navigate('projects')">View all →</span>
+<!-- ── MARQUEE ──────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Python / ML</span>
+    <span class="marquee-item">PyTorch</span>
+    <span class="marquee-item">Transformers</span>
+    <span class="marquee-item">JavaScript / TS</span>
+    <span class="marquee-item">React</span>
+    <span class="marquee-item">WebGL / GLSL</span>
+    <span class="marquee-item">Rust</span>
+    <span class="marquee-item">NLP</span>
+    <span class="marquee-item">Diffusion Models</span>
+    <span class="marquee-item">Sparse Attention</span>
+    <span class="marquee-item">Systems Programming</span>
+    <span class="marquee-item">UI / Design</span>
+    <span class="marquee-item">Python / ML</span>
+    <span class="marquee-item">PyTorch</span>
+    <span class="marquee-item">Transformers</span>
+    <span class="marquee-item">JavaScript / TS</span>
+    <span class="marquee-item">React</span>
+    <span class="marquee-item">WebGL / GLSL</span>
+    <span class="marquee-item">Rust</span>
+    <span class="marquee-item">NLP</span>
+    <span class="marquee-item">Diffusion Models</span>
+    <span class="marquee-item">Sparse Attention</span>
+    <span class="marquee-item">Systems Programming</span>
+    <span class="marquee-item">UI / Design</span>
+  </div>
+</div>
+
+<!-- ── STATS ─────────────────────────────────────────────────── -->
+<div class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fi"><div class="stat-num">12</div><div class="stat-lbl">Total Projects</div></div>
+      <div class="stat-item fi fi-d1"><div class="stat-num">4</div><div class="stat-lbl">In Progress</div></div>
+      <div class="stat-item fi fi-d2"><div class="stat-num">3</div><div class="stat-lbl">Research Areas</div></div>
+      <div class="stat-item fi fi-d3"><div class="stat-num">∞</div><div class="stat-lbl">Experiments Run</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ABOUT ─────────────────────────────────────────────────── -->
+<section class="section" id="about">
+  <div class="container">
+    <p class="eyebrow fi">About</p>
+    <h2 class="fi fi-d1">Developer, researcher, <em>builder.</em></h2>
+    <div class="about-layout">
+      <div class="about-text fi fi-d2">
+        <p>I'm a developer, researcher, and occasional designer with a deep interest in machine learning, systems programming, and building interfaces that feel <strong>genuinely delightful to use.</strong></p>
+        <p>Most of my work lives at the intersection of technical depth and usability — whether that's training models, writing low-level Python, or obsessing over algorithms at 2 a.m.</p>
+        <p>My research spans <strong>attention mechanisms, generative models, and NLP</strong> — studying how language models represent and compress information, and where they fail.</p>
+        <p>When I'm not at a keyboard, I'm probably reading about AI, walking, or looking for good coffee.</p>
+      </div>
+      <div class="about-aside fi fi-d3">
+        <div class="aside-block">
+          <div class="aside-label">// Skills</div>
+          <div class="skill-row">
+            <span class="skill-name">Python / ML</span>
+            <div class="skill-track"><div class="skill-fill" style="width:90%"></div></div>
+            <span class="skill-pct">90%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">JavaScript / TS</span>
+            <div class="skill-track"><div class="skill-fill" style="width:85%"></div></div>
+            <span class="skill-pct">85%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">Java</span>
+            <div class="skill-track"><div class="skill-fill" style="width:65%"></div></div>
+            <span class="skill-pct">65%</span>
+          </div>
+          <div class="skill-row">
+            <span class="skill-name">UI / Design</span>
+            <div class="skill-track"><div class="skill-fill" style="width:75%"></div></div>
+            <span class="skill-pct">75%</span>
+          </div>
+        </div>
+        <div class="aside-block">
+          <div class="aside-label">// Quick Facts</div>
+          <div class="fact-row"><span class="fact-k">Location</span><span class="fact-v">Oklahoma, US</span></div>
+          <div class="fact-row"><span class="fact-k">Focus</span><span class="fact-v">ML + Systems</span></div>
+          <div class="fact-row"><span class="fact-k">Available</span><span class="fact-v">Open to collab</span></div>
+          <div class="fact-row"><span class="fact-k">Coffee</span><span class="fact-v">Black, always</span></div>
+        </div>
+        <div class="aside-block">
+          <div class="aside-label">// Currently Reading</div>
+          <div class="read-item">SICP — Abelson &amp; Sussman</div>
+          <div class="read-item">The Alignment Problem</div>
+          <div class="read-item">Elements of Statistical Learning</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED PROJECTS ──────────────────────────────────────── -->
+<section class="section" id="projects">
+  <div class="container">
+    <p class="eyebrow fi">Featured Work</p>
+    <h2 class="fi fi-d1">Current <em>projects.</em></h2>
+
+    <div class="project-card fi">
+      <div class="card-meta">
+        <span class="p-cat">Project</span>
+        <span class="p-yr">2025</span>
+      </div>
+      <div>
+        <div class="p-title">Neural Style Transfer Dashboard</div>
+        <div class="p-desc">A real-time web app that applies artistic style transfer to images using a PyTorch backend. Built to explore the boundary between ML tooling and accessible creative interfaces — streamed over WebSockets.</div>
+        <div class="p-tags">
+          <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">React</span><span class="tag">WebSockets</span>
+        </div>
+      </div>
+      <div class="p-status"><span class="dot dot-active"></span> Active</div>
     </div>
 
-    <div class="projects-grid">
-      <!-- Featured Card -->
-      <div class="project-card featured" onclick="openModal(0)">
-        <div class="featured-content">
-          <div class="card-top">
-            <span class="card-category cat-project">● Project</span>
-            <span class="card-year">2025</span>
-          </div>
-          <div class="card-title">Neural Style Transfer Dashboard</div>
-          <div class="card-desc">
-            A real-time web app that applies artistic style transfer to images using a PyTorch backend.
-            Built to explore the boundary between ML tooling and accessible creative interfaces.
-          </div>
-          <div class="card-tags">
-            <span class="tag">Python</span><span class="tag">PyTorch</span>
-            <span class="tag">React</span><span class="tag">WebSockets</span>
-          </div>
-          <div class="card-footer">
-            <span class="card-status"><span class="status-dot status-active"></span>Active</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </div>
-        <div class="featured-visual">[ Preview Image ]</div>
+    <div class="project-card fi fi-d1">
+      <div class="card-meta">
+        <span class="p-cat">Research</span>
+        <span class="p-yr">2025</span>
       </div>
-
-      <div class="project-card" onclick="openModal(1)">
-        <div class="card-top">
-          <span class="card-category cat-research">● Research</span>
-          <span class="card-year">2025</span>
-        </div>
-        <div class="card-title">Attention Mechanisms in Sparse Networks</div>
-        <div class="card-desc">An investigation into how sparse attention patterns affect model performance on long-context tasks.</div>
-        <div class="card-tags">
-          <span class="tag">ML Research</span><span class="tag">Transformers</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-wip"></span>In Progress</span>
-          <span class="card-arrow">→</span>
+      <div>
+        <div class="p-title">Attention Mechanisms in Sparse Networks</div>
+        <div class="p-desc">An investigation into how sparse attention patterns affect model performance on long-context tasks — studying trade-offs between sparsity, efficiency, and representational capacity in transformer architectures.</div>
+        <div class="p-tags">
+          <span class="tag">ML Research</span><span class="tag">Transformers</span><span class="tag">Python</span>
         </div>
       </div>
+      <div class="p-status"><span class="dot dot-progress"></span> In Progress</div>
+    </div>
 
-      <div class="project-card" onclick="openModal(2)">
-        <div class="card-top">
-          <span class="card-category cat-experiment">● Experiment</span>
-          <span class="card-year">2024</span>
-        </div>
-        <div class="card-title">Procedural Terrain Generator</div>
-        <div class="card-desc">Playing with noise functions and erosion simulation to generate realistic 3D landscapes in the browser.</div>
-        <div class="card-tags">
+    <div class="project-card fi fi-d2">
+      <div class="card-meta">
+        <span class="p-cat">Experiment</span>
+        <span class="p-yr">2024</span>
+      </div>
+      <div>
+        <div class="p-title">Procedural Terrain Generator</div>
+        <div class="p-desc">Playing with noise functions and erosion simulation to generate realistic 3D landscapes in the browser — rendered entirely in real time with custom GLSL shaders and Three.js geometry.</div>
+        <div class="p-tags">
           <span class="tag">Three.js</span><span class="tag">GLSL</span><span class="tag">WebGL</span>
         </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
-          <span class="card-arrow">→</span>
-        </div>
       </div>
-    </div>
-  </section>
-
-</div>
-
-
-<!-- ══════════════════════════════
-     PAGE: PROJECTS
-══════════════════════════════ -->
-<div class="page" id="page-projects">
-  <section class="section">
-    <div class="section-header">
-      <h2 class="section-title">All Projects</h2>
-    </div>
-
-    <div class="filter-bar" id="filter-bar">
-      <button class="filter-btn active" data-filter="all" onclick="filterProjects('all', this)">
-        <span class="filter-dot"></span> All
-      </button>
-      <button class="filter-btn" data-filter="project" onclick="filterProjects('project', this)">
-        <span class="filter-dot" style="color:var(--blue)"></span> Project
-      </button>
-      <button class="filter-btn" data-filter="research" onclick="filterProjects('research', this)">
-        <span class="filter-dot" style="color:var(--teal)"></span> Research
-      </button>
-      <button class="filter-btn" data-filter="experiment" onclick="filterProjects('experiment', this)">
-        <span class="filter-dot" style="color:var(--purple)"></span> Experiment
-      </button>
-      <button class="filter-btn" data-filter="design" onclick="filterProjects('design', this)">
-        <span class="filter-dot" style="color:var(--amber)"></span> Design
-      </button>
-      <button class="filter-btn" data-filter="other" onclick="filterProjects('other', this)">
-        <span class="filter-dot" style="color:var(--muted)"></span> Other
-      </button>
-    </div>
-
-    <div class="projects-grid" id="projects-grid">
-
-      <div class="project-card" data-category="project" onclick="openModal(0)">
-        <div class="card-top">
-          <span class="card-category cat-project">● Project</span>
-          <span class="card-year">2025</span>
-        </div>
-        <div class="card-title">Neural Style Transfer Dashboard</div>
-        <div class="card-desc">A real-time web app applying artistic style transfer using a PyTorch backend with WebSocket streaming.</div>
-        <div class="card-tags">
-          <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">React</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-active"></span>Active</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="research" onclick="openModal(1)">
-        <div class="card-top">
-          <span class="card-category cat-research">● Research</span>
-          <span class="card-year">2025</span>
-        </div>
-        <div class="card-title">Attention in Sparse Networks</div>
-        <div class="card-desc">Investigating sparse attention patterns and their effect on long-context transformer performance.</div>
-        <div class="card-tags">
-          <span class="tag">ML</span><span class="tag">Transformers</span><span class="tag">Python</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-wip"></span>In Progress</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="experiment" onclick="openModal(2)">
-        <div class="card-top">
-          <span class="card-category cat-experiment">● Experiment</span>
-          <span class="card-year">2024</span>
-        </div>
-        <div class="card-title">Procedural Terrain Generator</div>
-        <div class="card-desc">Noise functions and erosion simulation to produce realistic 3D landscapes rendered entirely in WebGL.</div>
-        <div class="card-tags">
-          <span class="tag">Three.js</span><span class="tag">GLSL</span><span class="tag">WebGL</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="design" onclick="openModal(3)">
-        <div class="card-top">
-          <span class="card-category cat-design">● Design</span>
-          <span class="card-year">2024</span>
-        </div>
-        <div class="card-title">Type Specimen Generator</div>
-        <div class="card-desc">An interactive tool for generating type specimens and pairing guides, exportable as PDF.</div>
-        <div class="card-tags">
-          <span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Google Fonts</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="experiment" onclick="openModal(4)">
-        <div class="card-top">
-          <span class="card-category cat-experiment">● Experiment</span>
-          <span class="card-year">2024</span>
-        </div>
-        <div class="card-title">Audio Visualizer — FFT Rings</div>
-        <div class="card-desc">Real-time audio frequency visualization using the Web Audio API with procedurally animated SVG ring structures.</div>
-        <div class="card-tags">
-          <span class="tag">Web Audio</span><span class="tag">Canvas</span><span class="tag">SVG</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="project" onclick="openModal(5)">
-        <div class="card-top">
-          <span class="card-category cat-project">● Project</span>
-          <span class="card-year">2024</span>
-        </div>
-        <div class="card-title">CLI Task Tracker</div>
-        <div class="card-desc">A minimal command-line task and project tracker with tagging, priorities, and markdown notes support.</div>
-        <div class="card-tags">
-          <span class="tag">Rust</span><span class="tag">CLI</span><span class="tag">SQLite</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-active"></span>Active</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="research" onclick="openModal(6)">
-        <div class="card-top">
-          <span class="card-category cat-research">● Research</span>
-          <span class="card-year">2023</span>
-        </div>
-        <div class="card-title">Bias Detection in News Headlines</div>
-        <div class="card-desc">A corpus study comparing framing and sentiment across political news sources using NLP techniques.</div>
-        <div class="card-tags">
-          <span class="tag">NLP</span><span class="tag">spaCy</span><span class="tag">Python</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-complete"></span>Complete</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-      <div class="project-card" data-category="other" onclick="openModal(7)">
-        <div class="card-top">
-          <span class="card-category cat-other">● Other</span>
-          <span class="card-year">2023</span>
-        </div>
-        <div class="card-title">Personal Knowledge Graph</div>
-        <div class="card-desc">A local-first graph database for personal notes, linked concepts, and idea mapping with a visual explorer UI.</div>
-        <div class="card-tags">
-          <span class="tag">Obsidian</span><span class="tag">Dataview</span><span class="tag">Graph API</span>
-        </div>
-        <div class="card-footer">
-          <span class="card-status"><span class="status-dot status-active"></span>Active</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-</div>
-
-
-<!-- ══════════════════════════════
-     PAGE: ABOUT
-══════════════════════════════ -->
-<div class="page" id="page-about">
-  <div class="about-layout">
-    <div class="about-bio">
-      <h2>I build to learn and <em>grow.</em></h2>
-      <p>
-        I'm a developer, researcher, and occasional designer with a deep interest
-        in machine learning, systems programming, and building interfaces that feel
-        genuinely delightful to use.
-      </p>
-      <p>
-        Most of my work lives at the intersection of technical depth and usability —
-        whether that's training models, writing low-level Python, or obsessing over
-        algorithms at 2 a.m.
-      </p>
-      <p>
-        When I'm not at a keyboard I'm probably reading about artificial intelligence,
-        walking, or looking for good coffee.
-      </p>
-      <div style="margin-top:36px">
-        <button class="btn btn-primary" onclick="navigate('contact')">Get in Touch →</button>
-      </div>
-    </div>
-
-    <div class="about-sidebar">
-      <div class="sidebar-block">
-        <h4>// Skills</h4>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Python / ML</span><span>90%</span></div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>JavaScript / TS</span><span>85%</span></div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:85%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Java</span><span>65%</span></div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:65%"></div></div>
-        </div>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>UI / Design</span><span>75%</span></div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:75%"></div></div>
-        </div>
-      </div>
-
-      <div class="sidebar-block">
-        <h4>// Quick Facts</h4>
-        <ul class="sidebar-list">
-          <li>Location <span>Oklahoma, US</span></li>
-          <li>Focus <span>ML + Systems</span></li>
-          <li>Available <span>Open to collab</span></li>
-          <li>Coffee <span>Black, always</span></li>
-        </ul>
-      </div>
-
-      <div class="sidebar-block">
-        <h4>// Currently Reading</h4>
-        <ul class="sidebar-list">
-          <li><span>SICP — Abelson &amp; Sussman</span></li>
-          <li><span>The Alignment Problem</span></li>
-          <li><span>Elements of Statistical Learning</span></li>
-        </ul>
-      </div>
+      <div class="p-status"><span class="dot dot-complete"></span> Complete</div>
     </div>
   </div>
-</div>
+</section>
 
-
-<!-- ══════════════════════════════
-     PAGE: CONTACT
-══════════════════════════════ -->
-<div class="page" id="page-contact">
-  <div class="contact-layout">
-    <h2>Let's <em>talk.</em></h2>
-    <p>Have a project idea, want to collaborate, or just want to say hello?
-       Fill out the form and I'll get back to you as soon as I can.</p>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" placeholder="Jane Smith">
+<!-- ── ALL PROJECTS ───────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="all-head fi">
+      <div>
+        <p class="eyebrow" style="margin-bottom:12px">All Work</p>
+        <h2>Everything <em>I've built.</em></h2>
       </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" placeholder="jane@example.com">
+      <div class="filter-row">
+        <button class="f-btn on" data-f="all">All</button>
+        <button class="f-btn" data-f="project">Project</button>
+        <button class="f-btn" data-f="research">Research</button>
+        <button class="f-btn" data-f="experiment">Experiment</button>
+        <button class="f-btn" data-f="other">Other</button>
       </div>
     </div>
+    <div class="tile-grid fi fi-d1" id="tile-grid"></div>
+  </div>
+</section>
 
-    <div class="form-group">
-      <label>Subject</label>
-      <select>
-        <option value="">Select a topic…</option>
-        <option>Collaboration</option>
-        <option>Question about a project</option>
-        <option>Research inquiry</option>
-        <option>Just saying hi</option>
-        <option>Other</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Message</label>
-      <textarea placeholder="Tell me what's on your mind…"></textarea>
-    </div>
-
-    <button class="btn btn-primary" onclick="submitForm()">Send Message →</button>
-
-    <div class="form-success" id="form-success">
-      ✓ &nbsp; Message received — I'll be in touch soon.
-    </div>
-
-    <div class="contact-links">
-      <a class="contact-link" href="https://github.com/ryan-nock">⌥ GitHub</a>
-      <a class="contact-link" href="https://www.linkedin.com/in/ryan-nock/">⌥ LinkedIn</a>
-      <a class="contact-link" href="#">⌥ Twitter / X</a>
-      <a class="contact-link" href="#">⌥ Email</a>
+<!-- ── CONTACT ────────────────────────────────────────────────── -->
+<section class="section" id="contact">
+  <div class="container">
+    <p class="eyebrow fi">Contact</p>
+    <h2 class="fi fi-d1">Let's <em>talk.</em></h2>
+    <div class="contact-layout">
+      <div class="fi fi-d2">
+        <p class="contact-blurb">Have a project idea, want to collaborate, or just want to say hello? I'm open to research collaborations, interesting builds, and good conversations about the future of ML.</p>
+        <a href="https://github.com/ryan-nock" class="c-link" target="_blank"><span>GitHub</span><span>→</span></a>
+        <a href="https://www.linkedin.com/in/ryan-nock/" class="c-link" target="_blank"><span>LinkedIn</span><span>→</span></a>
+        <a href="#" class="c-link"><span>Twitter / X</span><span>→</span></a>
+        <a href="mailto:hello@ryannock.dev" class="c-link"><span>Email</span><span>→</span></a>
+      </div>
+      <form class="c-form fi fi-d3" id="c-form">
+        <div class="form-row">
+          <div class="fg">
+            <label>Name</label>
+            <input type="text" placeholder="Your name" required>
+          </div>
+          <div class="fg">
+            <label>Email</label>
+            <input type="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Subject</label>
+          <select>
+            <option value="">Select a topic…</option>
+            <option>Collaboration</option>
+            <option>Question about a project</option>
+            <option>Research inquiry</option>
+            <option>Just saying hi</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Message</label>
+          <textarea placeholder="What's on your mind?" required></textarea>
+        </div>
+        <button type="submit" class="c-submit">Send Message →</button>
+        <div class="c-success" id="c-success">✓ Message received — I'll be in touch soon.</div>
+      </form>
     </div>
   </div>
-</div>
+</section>
 
-
-<!-- ── FOOTER ── -->
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
 <footer>
-  <p>© 2025 <span class="footer-dot">●</span> Ryan Nock</p>
-  <p>// Last updated April 2025</p>
+  <div class="container">
+    <div class="foot-inner">
+      <span class="foot-l">© 2025 ● Ryan Nock</span>
+      <span class="foot-r">// Last updated April 2025</span>
+    </div>
+  </div>
 </footer>
 
-
-<!-- ══════════════════════════════
-     PROJECT DETAIL MODAL
-══════════════════════════════ -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
-    <div class="modal-close">
-      <button onclick="closeModalDirect()">✕ Close</button>
-    </div>
-    <div id="modal-content"></div>
-  </div>
-</div>
-
-
 <script>
-// ── PROJECT DATA ──
-const projects = [
-  {
-    title: "Neural Style Transfer Dashboard",
-    category: "Project",
-    catClass: "cat-project",
-    year: "2025",
-    status: "Active",
-    statusClass: "status-active",
-    description: "A real-time web application that lets users apply neural artistic style transfer to their own images. The frontend is a React SPA that communicates with a FastAPI backend via WebSockets for live progress streaming.",
-    detail: "This project started as a way to make ML tooling actually accessible. The key challenge was optimizing inference speed while maintaining quality — I ended up using a pre-trained VGG-19 backbone with a custom loss weighting scheme that shaved ~40% off processing time.",
-    tags: ["Python", "PyTorch", "React", "FastAPI", "WebSockets"],
-    links: ["GitHub →", "Live Demo →"]
-  },
-  {
-    title: "Attention in Sparse Networks",
-    category: "Research",
-    catClass: "cat-research",
-    year: "2025",
-    status: "In Progress",
-    statusClass: "status-wip",
-    description: "An empirical study investigating how different sparse attention patterns — local, strided, and random — affect transformer performance on long-context language tasks.",
-    detail: "Early findings suggest that strided attention degrades gracefully on summarization tasks, while random sparsity hurts cross-sentence reasoning more than expected. Full write-up in progress.",
-    tags: ["ML Research", "Transformers", "Python", "HuggingFace"],
-    links: ["Paper Draft →", "Code →"]
-  },
-  {
-    title: "Procedural Terrain Generator",
-    category: "Experiment",
-    catClass: "cat-experiment",
-    year: "2024",
-    status: "Complete",
-    statusClass: "status-complete",
-    description: "A browser-based terrain generator using layered Perlin noise, hydraulic erosion simulation, and real-time 3D rendering via Three.js and GLSL shaders.",
-    detail: "The erosion simulation runs 5,000 particle droplet iterations per second using a custom GPGPU pipeline. Surprisingly faithful to real landscape formations.",
-    tags: ["Three.js", "GLSL", "WebGL", "JavaScript"],
-    links: ["Live Demo →", "GitHub →"]
-  },
-  {
-    title: "Type Specimen Generator",
-    category: "Design",
-    catClass: "cat-design",
-    year: "2024",
-    status: "Complete",
-    statusClass: "status-complete",
-    description: "An interactive tool for creating type specimens and font pairing guides. Pulls from Google Fonts API, renders live previews, and exports to PDF.",
-    detail: "Built as a design utility for my own workflow. Ended up sharing it and people found it useful for rapid font exploration without design tool overhead.",
-    tags: ["CSS", "JavaScript", "Google Fonts API"],
-    links: ["Live Tool →", "GitHub →"]
-  },
-  {
-    title: "Audio Visualizer — FFT Rings",
-    category: "Experiment",
-    catClass: "cat-experiment",
-    year: "2024",
-    status: "Complete",
-    statusClass: "status-complete",
-    description: "Real-time audio frequency visualization using the Web Audio API. Animated concentric SVG rings respond to FFT frequency bins with physics-like motion.",
-    detail: "Started as a weekend experiment and turned into a 3-week rabbit hole of signal processing and animation timing. The 'breathe' mode is my favorite output.",
-    tags: ["Web Audio API", "Canvas", "SVG", "JavaScript"],
-    links: ["Live Demo →", "GitHub →"]
-  },
-  {
-    title: "CLI Task Tracker",
-    category: "Project",
-    catClass: "cat-project",
-    year: "2024",
-    status: "Active",
-    statusClass: "status-active",
-    description: "A minimal, fast command-line task and project tracker written in Rust. Features tagging, priority queues, markdown note support, and SQLite persistence.",
-    detail: "I got frustrated with every existing task app. This one does exactly what I want and nothing more. Binary size is under 2MB. Startup time is imperceptible.",
-    tags: ["Rust", "SQLite", "CLI", "Terminal UI"],
-    links: ["GitHub →", "Crates.io →"]
-  },
-  {
-    title: "Bias Detection in News Headlines",
-    category: "Research",
-    catClass: "cat-research",
-    year: "2023",
-    status: "Complete",
-    statusClass: "status-complete",
-    description: "A corpus study comparing framing, sentiment, and lexical choices across political news sources. Built a custom annotation pipeline and classifier using spaCy and HuggingFace.",
-    detail: "Analyzed ~80,000 headlines across 12 sources over 6 months. Key finding: framing divergence increases significantly during election cycles, more so than base sentiment shifts.",
-    tags: ["NLP", "spaCy", "Python", "HuggingFace", "Corpus Analysis"],
-    links: ["Paper →", "Dataset →", "Code →"]
-  },
-  {
-    title: "Personal Knowledge Graph",
-    category: "Other",
-    catClass: "cat-other",
-    year: "2023",
-    status: "Active",
-    statusClass: "status-active",
-    description: "A local-first personal knowledge management system built on Obsidian with custom Dataview queries, a graph explorer UI, and automated backlinking.",
-    detail: "Not strictly a project anyone else can use out of the box, but the methodology and vault structure are documented. Currently has 800+ notes with rich interlinking.",
-    tags: ["Obsidian", "Dataview", "JavaScript", "Graph"],
-    links: ["Template →", "Write-up →"]
+  /* ── Projects data ── */
+  const PROJECTS = [
+    { cat:'project',    yr:'2025', title:'Neural Style Transfer Dashboard',     desc:'Real-time style transfer web app with a PyTorch backend and WebSocket streaming.',           tags:['Python','PyTorch','React'],        status:'active',   lbl:'Active'      },
+    { cat:'research',   yr:'2025', title:'Attention in Sparse Networks',         desc:'Investigating sparse attention patterns and their effect on long-context transformer performance.', tags:['ML','Transformers','Python'],   status:'progress', lbl:'In Progress' },
+    { cat:'experiment', yr:'2024', title:'Procedural Terrain Generator',         desc:'Noise functions and erosion simulation producing realistic 3D landscapes rendered in WebGL.',  tags:['Three.js','GLSL','WebGL'],         status:'complete', lbl:'Complete'    },
+    { cat:'design',     yr:'2024', title:'Type Specimen Generator',              desc:'Interactive tool for generating type specimens and pairing guides, exportable as PDF.',         tags:['CSS','JavaScript','Google Fonts'], status:'complete', lbl:'Complete'    },
+    { cat:'experiment', yr:'2024', title:'Audio Visualizer — FFT Rings',         desc:'Real-time audio frequency visualization using the Web Audio API with animated SVG rings.',     tags:['Web Audio','Canvas','SVG'],        status:'complete', lbl:'Complete'    },
+    { cat:'project',    yr:'2024', title:'CLI Task Tracker',                     desc:'Minimal command-line task tracker with tagging, priorities, and markdown notes support.',       tags:['Rust','CLI','SQLite'],             status:'active',   lbl:'Active'      },
+    { cat:'research',   yr:'2023', title:'Bias Detection in News Headlines',     desc:'Corpus study comparing framing and sentiment across political news sources using NLP.',         tags:['NLP','spaCy','Python'],            status:'complete', lbl:'Complete'    },
+    { cat:'other',      yr:'2023', title:'Personal Knowledge Graph',             desc:'Local-first graph database for notes, linked concepts, and idea mapping with a visual UI.',    tags:['Obsidian','Dataview','Graph API'], status:'active',   lbl:'Active'      },
+  ];
+
+  const dotClass = { active:'dot-active', progress:'dot-progress', complete:'dot-complete' };
+
+  function renderTiles(filter) {
+    const list = filter === 'all' ? PROJECTS : PROJECTS.filter(p => p.cat === filter);
+    document.getElementById('tile-grid').innerHTML = list.map(p => `
+      <div class="p-tile">
+        <div class="tile-top">
+          <div>
+            <span class="p-cat">${p.cat.charAt(0).toUpperCase()+p.cat.slice(1)}</span>
+            &ensp;<span class="p-yr">${p.yr}</span>
+          </div>
+          <span class="dot ${dotClass[p.status]}"></span>
+        </div>
+        <div class="tile-title">${p.title}</div>
+        <div class="tile-desc">${p.desc}</div>
+        <div class="tile-foot">
+          <div class="p-tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <span class="tile-stat">${p.lbl} →</span>
+        </div>
+      </div>
+    `).join('');
   }
-];
 
-// ── NAVIGATION ──
-function navigate(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page).classList.add('active');
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  return false;
-}
-
-// ── FILTER ──
-function filterProjects(cat, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  document.querySelectorAll('#projects-grid .project-card').forEach(card => {
-    if (cat === 'all' || card.dataset.category === cat) {
-      card.classList.remove('hidden');
-    } else {
-      card.classList.add('hidden');
-    }
+  document.querySelectorAll('.f-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      renderTiles(btn.dataset.f);
+    });
   });
-}
 
-// ── MODAL ──
-function openModal(idx) {
-  const p = projects[idx];
-  if (!p) return;
+  renderTiles('all');
 
-  document.getElementById('modal-content').innerHTML = `
-    <div class="modal-meta">
-      <span class="card-category ${p.catClass}">● ${p.category}</span>
-      <span class="card-year">${p.year}</span>
-      <span class="card-status" style="margin-left:8px">
-        <span class="status-dot ${p.statusClass}"></span>
-        ${p.status}
-      </span>
-    </div>
-    <h2>${p.title}</h2>
-    <p>${p.description}</p>
-    <div class="modal-section-title">// Details</div>
-    <p>${p.detail}</p>
-    <div class="modal-section-title">// Stack</div>
-    <div class="card-tags" style="margin-bottom:0">
-      ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-    </div>
-    <div class="modal-links">
-      ${p.links.map(l => `<button class="btn btn-ghost" style="font-size:.7rem">${l}</button>`).join('')}
-    </div>
-  `;
+  /* ── Contact form ── */
+  document.getElementById('c-form').addEventListener('submit', e => {
+    e.preventDefault();
+    document.getElementById('c-success').style.display = 'block';
+    e.target.querySelector('.c-submit').style.display = 'none';
+  });
 
-  document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
+  /* ── Scroll fade-in ── */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) en.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
 
-function closeModal(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
-}
+  document.querySelectorAll('.fi').forEach(el => obs.observe(el));
 
-function closeModalDirect() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// ── FORM ──
-function submitForm() {
-  const success = document.getElementById('form-success');
-  success.style.display = 'block';
-  setTimeout(() => { success.style.display = 'none'; }, 5000);
-}
-
-// ── KEYBOARD ──
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModalDirect();
-});
-
-// prevent default for nav links
-document.querySelectorAll('.nav-links a').forEach(a => {
-  a.addEventListener('click', e => e.preventDefault());
-});
+  /* ── Smooth scroll ── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
 </script>
+
 </body>
 </html>
